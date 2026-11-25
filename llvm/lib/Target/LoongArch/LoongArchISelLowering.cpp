@@ -177,6 +177,9 @@ LoongArchTargetLowering::LoongArchTargetLowering(const TargetMachine &TM,
     setOperationAction(ISD::SRL, MVT::i32, Custom);
     setOperationAction(ISD::FP_TO_SINT, MVT::i32, Custom);
     setOperationAction({ISD::LRINT, ISD::LLRINT}, MVT::i32, Custom);
+    setOperationAction({ISD::STRICT_LRINT, ISD::STRICT_LLRINT,
+                        ISD::STRICT_LROUND, ISD::STRICT_LLROUND},
+                       MVT::i32, Custom);
     setOperationAction(ISD::BITCAST, MVT::i32, Custom);
     setOperationAction(ISD::ROTR, MVT::i32, Custom);
     setOperationAction(ISD::ROTL, MVT::i32, Custom);
@@ -6031,6 +6034,19 @@ void LoongArchTargetLowering::ReplaceNodeResults(
       return;
     SDValue Ftint = DAG.getNode(LoongArchISD::FTINT_CURRENT, DL, MVT::f32, Src);
     Results.push_back(DAG.getBitcast(VT, Ftint));
+    return;
+  }
+  case ISD::STRICT_LRINT:
+  case ISD::STRICT_LLRINT:
+  case ISD::STRICT_LROUND:
+  case ISD::STRICT_LLROUND: {
+    assert(VT == MVT::i32 && Subtarget.is64Bit() &&
+           "Unexpected custom legalisation");
+    // There is no generic promotion for these, so widen to i64 and truncate.
+    SDValue Res = DAG.getNode(N->getOpcode(), DL, {MVT::i64, MVT::Other},
+                              {N->getOperand(0), N->getOperand(1)});
+    Results.push_back(DAG.getNode(ISD::TRUNCATE, DL, VT, Res));
+    Results.push_back(Res.getValue(1));
     return;
   }
   case ISD::FP_TO_SINT: {
