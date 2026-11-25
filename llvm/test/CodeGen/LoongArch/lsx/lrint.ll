@@ -5,22 +5,7 @@
 define <4 x i32> @lrint_v4i32_v4f32(<4 x float> %x) nounwind {
 ; CHECK-LABEL: lrint_v4i32_v4f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    ftint.w.s $fa1, $fa0
-; CHECK-NEXT:    movfr2gr.s $a0, $fa1
-; CHECK-NEXT:    vinsgr2vr.w $vr1, $a0, 0
-; CHECK-NEXT:    vreplvei.w $vr2, $vr0, 1
-; CHECK-NEXT:    ftint.w.s $fa2, $fa2
-; CHECK-NEXT:    movfr2gr.s $a0, $fa2
-; CHECK-NEXT:    vinsgr2vr.w $vr1, $a0, 1
-; CHECK-NEXT:    vreplvei.w $vr2, $vr0, 2
-; CHECK-NEXT:    ftint.w.s $fa2, $fa2
-; CHECK-NEXT:    movfr2gr.s $a0, $fa2
-; CHECK-NEXT:    vinsgr2vr.w $vr1, $a0, 2
-; CHECK-NEXT:    vreplvei.w $vr0, $vr0, 3
-; CHECK-NEXT:    ftint.w.s $fa0, $fa0
-; CHECK-NEXT:    movfr2gr.s $a0, $fa0
-; CHECK-NEXT:    vinsgr2vr.w $vr1, $a0, 3
-; CHECK-NEXT:    vori.b $vr0, $vr1, 0
+; CHECK-NEXT:    vftint.w.s $vr0, $vr0
 ; CHECK-NEXT:    ret
   %r = call <4 x i32> @llvm.lrint.v4i32.v4f32(<4 x float> %x)
   ret <4 x i32> %r
@@ -29,97 +14,26 @@ define <4 x i32> @lrint_v4i32_v4f32(<4 x float> %x) nounwind {
 define <4 x i32> @llrint_v4i32_v4f32(<4 x float> %x) nounwind {
 ; CHECK-LABEL: llrint_v4i32_v4f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    ftint.w.s $fa1, $fa0
-; CHECK-NEXT:    movfr2gr.s $a0, $fa1
-; CHECK-NEXT:    vinsgr2vr.w $vr1, $a0, 0
-; CHECK-NEXT:    vreplvei.w $vr2, $vr0, 1
-; CHECK-NEXT:    ftint.w.s $fa2, $fa2
-; CHECK-NEXT:    movfr2gr.s $a0, $fa2
-; CHECK-NEXT:    vinsgr2vr.w $vr1, $a0, 1
-; CHECK-NEXT:    vreplvei.w $vr2, $vr0, 2
-; CHECK-NEXT:    ftint.w.s $fa2, $fa2
-; CHECK-NEXT:    movfr2gr.s $a0, $fa2
-; CHECK-NEXT:    vinsgr2vr.w $vr1, $a0, 2
-; CHECK-NEXT:    vreplvei.w $vr0, $vr0, 3
-; CHECK-NEXT:    ftint.w.s $fa0, $fa0
-; CHECK-NEXT:    movfr2gr.s $a0, $fa0
-; CHECK-NEXT:    vinsgr2vr.w $vr1, $a0, 3
-; CHECK-NEXT:    vori.b $vr0, $vr1, 0
+; CHECK-NEXT:    vftint.w.s $vr0, $vr0
 ; CHECK-NEXT:    ret
   %r = call <4 x i32> @llvm.llrint.v4i32.v4f32(<4 x float> %x)
   ret <4 x i32> %r
 }
 
 define <2 x i64> @lrint_v2i64_v2f64(<2 x double> %x) nounwind {
-; LA32-LABEL: lrint_v2i64_v2f64:
-; LA32:       # %bb.0:
-; LA32-NEXT:    addi.w $sp, $sp, -48
-; LA32-NEXT:    st.w $ra, $sp, 44 # 4-byte Folded Spill
-; LA32-NEXT:    vst $vr0, $sp, 0 # 16-byte Folded Spill
-; LA32-NEXT:    # kill: def $f0_64 killed $f0_64 killed $vr0
-; LA32-NEXT:    bl lrint
-; LA32-NEXT:    vinsgr2vr.w $vr0, $a0, 0
-; LA32-NEXT:    vinsgr2vr.w $vr0, $a1, 1
-; LA32-NEXT:    vst $vr0, $sp, 16 # 16-byte Folded Spill
-; LA32-NEXT:    vld $vr0, $sp, 0 # 16-byte Folded Reload
-; LA32-NEXT:    vreplvei.d $vr0, $vr0, 1
-; LA32-NEXT:    # kill: def $f0_64 killed $f0_64 killed $vr0
-; LA32-NEXT:    bl lrint
-; LA32-NEXT:    vld $vr0, $sp, 16 # 16-byte Folded Reload
-; LA32-NEXT:    vinsgr2vr.w $vr0, $a0, 2
-; LA32-NEXT:    vinsgr2vr.w $vr0, $a1, 3
-; LA32-NEXT:    ld.w $ra, $sp, 44 # 4-byte Folded Reload
-; LA32-NEXT:    addi.w $sp, $sp, 48
-; LA32-NEXT:    ret
-;
-; LA64-LABEL: lrint_v2i64_v2f64:
-; LA64:       # %bb.0:
-; LA64-NEXT:    ftint.l.d $fa1, $fa0
-; LA64-NEXT:    movfr2gr.d $a0, $fa1
-; LA64-NEXT:    vinsgr2vr.d $vr1, $a0, 0
-; LA64-NEXT:    vreplvei.d $vr0, $vr0, 1
-; LA64-NEXT:    ftint.l.d $fa0, $fa0
-; LA64-NEXT:    movfr2gr.d $a0, $fa0
-; LA64-NEXT:    vinsgr2vr.d $vr1, $a0, 1
-; LA64-NEXT:    vori.b $vr0, $vr1, 0
-; LA64-NEXT:    ret
+; CHECK-LABEL: lrint_v2i64_v2f64:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    vftint.l.d $vr0, $vr0
+; CHECK-NEXT:    ret
   %r = call <2 x i64> @llvm.lrint.v2i64.v2f64(<2 x double> %x)
   ret <2 x i64> %r
 }
 
 define <2 x i64> @llrint_v2i64_v2f64(<2 x double> %x) nounwind {
-; LA32-LABEL: llrint_v2i64_v2f64:
-; LA32:       # %bb.0:
-; LA32-NEXT:    addi.w $sp, $sp, -48
-; LA32-NEXT:    st.w $ra, $sp, 44 # 4-byte Folded Spill
-; LA32-NEXT:    vst $vr0, $sp, 0 # 16-byte Folded Spill
-; LA32-NEXT:    # kill: def $f0_64 killed $f0_64 killed $vr0
-; LA32-NEXT:    bl llrint
-; LA32-NEXT:    vinsgr2vr.w $vr0, $a0, 0
-; LA32-NEXT:    vinsgr2vr.w $vr0, $a1, 1
-; LA32-NEXT:    vst $vr0, $sp, 16 # 16-byte Folded Spill
-; LA32-NEXT:    vld $vr0, $sp, 0 # 16-byte Folded Reload
-; LA32-NEXT:    vreplvei.d $vr0, $vr0, 1
-; LA32-NEXT:    # kill: def $f0_64 killed $f0_64 killed $vr0
-; LA32-NEXT:    bl llrint
-; LA32-NEXT:    vld $vr0, $sp, 16 # 16-byte Folded Reload
-; LA32-NEXT:    vinsgr2vr.w $vr0, $a0, 2
-; LA32-NEXT:    vinsgr2vr.w $vr0, $a1, 3
-; LA32-NEXT:    ld.w $ra, $sp, 44 # 4-byte Folded Reload
-; LA32-NEXT:    addi.w $sp, $sp, 48
-; LA32-NEXT:    ret
-;
-; LA64-LABEL: llrint_v2i64_v2f64:
-; LA64:       # %bb.0:
-; LA64-NEXT:    ftint.l.d $fa1, $fa0
-; LA64-NEXT:    movfr2gr.d $a0, $fa1
-; LA64-NEXT:    vinsgr2vr.d $vr1, $a0, 0
-; LA64-NEXT:    vreplvei.d $vr0, $vr0, 1
-; LA64-NEXT:    ftint.l.d $fa0, $fa0
-; LA64-NEXT:    movfr2gr.d $a0, $fa0
-; LA64-NEXT:    vinsgr2vr.d $vr1, $a0, 1
-; LA64-NEXT:    vori.b $vr0, $vr1, 0
-; LA64-NEXT:    ret
+; CHECK-LABEL: llrint_v2i64_v2f64:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    vftint.l.d $vr0, $vr0
+; CHECK-NEXT:    ret
   %r = call <2 x i64> @llvm.llrint.v2i64.v2f64(<2 x double> %x)
   ret <2 x i64> %r
 }
@@ -140,3 +54,6 @@ define <2 x i32> @lrint_v2i32_v2f64(<2 x double> %x) nounwind {
   %r = call <2 x i32> @llvm.lrint.v2i32.v2f64(<2 x double> %x)
   ret <2 x i32> %r
 }
+;; NOTE: These prefixes are unused and the list is autogenerated. Do not add tests below this line:
+; LA32: {{.*}}
+; LA64: {{.*}}

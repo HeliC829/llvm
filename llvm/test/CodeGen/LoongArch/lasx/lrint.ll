@@ -5,39 +5,7 @@
 define <8 x i32> @lrint_v8i32_v8f32(<8 x float> %x) nounwind {
 ; CHECK-LABEL: lrint_v8i32_v8f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    xvpickve.w $xr1, $xr0, 4
-; CHECK-NEXT:    ftint.w.s $fa1, $fa1
-; CHECK-NEXT:    movfr2gr.s $a0, $fa1
-; CHECK-NEXT:    vinsgr2vr.w $vr2, $a0, 0
-; CHECK-NEXT:    xvpickve.w $xr1, $xr0, 5
-; CHECK-NEXT:    ftint.w.s $fa1, $fa1
-; CHECK-NEXT:    movfr2gr.s $a0, $fa1
-; CHECK-NEXT:    vinsgr2vr.w $vr2, $a0, 1
-; CHECK-NEXT:    xvpickve.w $xr1, $xr0, 6
-; CHECK-NEXT:    ftint.w.s $fa1, $fa1
-; CHECK-NEXT:    movfr2gr.s $a0, $fa1
-; CHECK-NEXT:    vinsgr2vr.w $vr2, $a0, 2
-; CHECK-NEXT:    xvpickve.w $xr1, $xr0, 7
-; CHECK-NEXT:    ftint.w.s $fa1, $fa1
-; CHECK-NEXT:    movfr2gr.s $a0, $fa1
-; CHECK-NEXT:    vinsgr2vr.w $vr2, $a0, 3
-; CHECK-NEXT:    ftint.w.s $fa1, $fa0
-; CHECK-NEXT:    movfr2gr.s $a0, $fa1
-; CHECK-NEXT:    vinsgr2vr.w $vr1, $a0, 0
-; CHECK-NEXT:    xvpickve.w $xr3, $xr0, 1
-; CHECK-NEXT:    ftint.w.s $fa3, $fa3
-; CHECK-NEXT:    movfr2gr.s $a0, $fa3
-; CHECK-NEXT:    vinsgr2vr.w $vr1, $a0, 1
-; CHECK-NEXT:    xvpickve.w $xr3, $xr0, 2
-; CHECK-NEXT:    ftint.w.s $fa3, $fa3
-; CHECK-NEXT:    movfr2gr.s $a0, $fa3
-; CHECK-NEXT:    vinsgr2vr.w $vr1, $a0, 2
-; CHECK-NEXT:    xvpickve.w $xr0, $xr0, 3
-; CHECK-NEXT:    ftint.w.s $fa0, $fa0
-; CHECK-NEXT:    movfr2gr.s $a0, $fa0
-; CHECK-NEXT:    vinsgr2vr.w $vr1, $a0, 3
-; CHECK-NEXT:    xvpermi.q $xr1, $xr2, 2
-; CHECK-NEXT:    xvori.b $xr0, $xr1, 0
+; CHECK-NEXT:    xvftint.w.s $xr0, $xr0
 ; CHECK-NEXT:    ret
   %r = call <8 x i32> @llvm.lrint.v8i32.v8f32(<8 x float> %x)
   ret <8 x i32> %r
@@ -46,168 +14,26 @@ define <8 x i32> @lrint_v8i32_v8f32(<8 x float> %x) nounwind {
 define <8 x i32> @llrint_v8i32_v8f32(<8 x float> %x) nounwind {
 ; CHECK-LABEL: llrint_v8i32_v8f32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    xvpickve.w $xr1, $xr0, 4
-; CHECK-NEXT:    ftint.w.s $fa1, $fa1
-; CHECK-NEXT:    movfr2gr.s $a0, $fa1
-; CHECK-NEXT:    vinsgr2vr.w $vr2, $a0, 0
-; CHECK-NEXT:    xvpickve.w $xr1, $xr0, 5
-; CHECK-NEXT:    ftint.w.s $fa1, $fa1
-; CHECK-NEXT:    movfr2gr.s $a0, $fa1
-; CHECK-NEXT:    vinsgr2vr.w $vr2, $a0, 1
-; CHECK-NEXT:    xvpickve.w $xr1, $xr0, 6
-; CHECK-NEXT:    ftint.w.s $fa1, $fa1
-; CHECK-NEXT:    movfr2gr.s $a0, $fa1
-; CHECK-NEXT:    vinsgr2vr.w $vr2, $a0, 2
-; CHECK-NEXT:    xvpickve.w $xr1, $xr0, 7
-; CHECK-NEXT:    ftint.w.s $fa1, $fa1
-; CHECK-NEXT:    movfr2gr.s $a0, $fa1
-; CHECK-NEXT:    vinsgr2vr.w $vr2, $a0, 3
-; CHECK-NEXT:    ftint.w.s $fa1, $fa0
-; CHECK-NEXT:    movfr2gr.s $a0, $fa1
-; CHECK-NEXT:    vinsgr2vr.w $vr1, $a0, 0
-; CHECK-NEXT:    xvpickve.w $xr3, $xr0, 1
-; CHECK-NEXT:    ftint.w.s $fa3, $fa3
-; CHECK-NEXT:    movfr2gr.s $a0, $fa3
-; CHECK-NEXT:    vinsgr2vr.w $vr1, $a0, 1
-; CHECK-NEXT:    xvpickve.w $xr3, $xr0, 2
-; CHECK-NEXT:    ftint.w.s $fa3, $fa3
-; CHECK-NEXT:    movfr2gr.s $a0, $fa3
-; CHECK-NEXT:    vinsgr2vr.w $vr1, $a0, 2
-; CHECK-NEXT:    xvpickve.w $xr0, $xr0, 3
-; CHECK-NEXT:    ftint.w.s $fa0, $fa0
-; CHECK-NEXT:    movfr2gr.s $a0, $fa0
-; CHECK-NEXT:    vinsgr2vr.w $vr1, $a0, 3
-; CHECK-NEXT:    xvpermi.q $xr1, $xr2, 2
-; CHECK-NEXT:    xvori.b $xr0, $xr1, 0
+; CHECK-NEXT:    xvftint.w.s $xr0, $xr0
 ; CHECK-NEXT:    ret
   %r = call <8 x i32> @llvm.llrint.v8i32.v8f32(<8 x float> %x)
   ret <8 x i32> %r
 }
 
 define <4 x i64> @lrint_v4i64_v4f64(<4 x double> %x) nounwind {
-; LA32-LABEL: lrint_v4i64_v4f64:
-; LA32:       # %bb.0:
-; LA32-NEXT:    addi.w $sp, $sp, -128
-; LA32-NEXT:    st.w $ra, $sp, 124 # 4-byte Folded Spill
-; LA32-NEXT:    xvst $xr0, $sp, 80 # 32-byte Folded Spill
-; LA32-NEXT:    xvpickve.d $xr0, $xr0, 2
-; LA32-NEXT:    # kill: def $f0_64 killed $f0_64 killed $xr0
-; LA32-NEXT:    bl lrint
-; LA32-NEXT:    vinsgr2vr.w $vr0, $a0, 0
-; LA32-NEXT:    vinsgr2vr.w $vr0, $a1, 1
-; LA32-NEXT:    xvst $xr0, $sp, 48 # 32-byte Folded Spill
-; LA32-NEXT:    xvld $xr0, $sp, 80 # 32-byte Folded Reload
-; LA32-NEXT:    xvpickve.d $xr0, $xr0, 3
-; LA32-NEXT:    # kill: def $f0_64 killed $f0_64 killed $xr0
-; LA32-NEXT:    bl lrint
-; LA32-NEXT:    xvld $xr0, $sp, 48 # 32-byte Folded Reload
-; LA32-NEXT:    vinsgr2vr.w $vr0, $a0, 2
-; LA32-NEXT:    vinsgr2vr.w $vr0, $a1, 3
-; LA32-NEXT:    xvst $xr0, $sp, 48 # 32-byte Folded Spill
-; LA32-NEXT:    xvld $xr0, $sp, 80 # 32-byte Folded Reload
-; LA32-NEXT:    # kill: def $f0_64 killed $f0_64 killed $xr0
-; LA32-NEXT:    bl lrint
-; LA32-NEXT:    vinsgr2vr.w $vr0, $a0, 0
-; LA32-NEXT:    vinsgr2vr.w $vr0, $a1, 1
-; LA32-NEXT:    xvst $xr0, $sp, 16 # 32-byte Folded Spill
-; LA32-NEXT:    xvld $xr0, $sp, 80 # 32-byte Folded Reload
-; LA32-NEXT:    xvpickve.d $xr0, $xr0, 1
-; LA32-NEXT:    # kill: def $f0_64 killed $f0_64 killed $xr0
-; LA32-NEXT:    bl lrint
-; LA32-NEXT:    xvld $xr1, $sp, 16 # 32-byte Folded Reload
-; LA32-NEXT:    vinsgr2vr.w $vr1, $a0, 2
-; LA32-NEXT:    vinsgr2vr.w $vr1, $a1, 3
-; LA32-NEXT:    xvld $xr0, $sp, 48 # 32-byte Folded Reload
-; LA32-NEXT:    xvpermi.q $xr1, $xr0, 2
-; LA32-NEXT:    xvori.b $xr0, $xr1, 0
-; LA32-NEXT:    ld.w $ra, $sp, 124 # 4-byte Folded Reload
-; LA32-NEXT:    addi.w $sp, $sp, 128
-; LA32-NEXT:    ret
-;
-; LA64-LABEL: lrint_v4i64_v4f64:
-; LA64:       # %bb.0:
-; LA64-NEXT:    xvpickve.d $xr1, $xr0, 2
-; LA64-NEXT:    ftint.l.d $fa1, $fa1
-; LA64-NEXT:    movfr2gr.d $a0, $fa1
-; LA64-NEXT:    vinsgr2vr.d $vr2, $a0, 0
-; LA64-NEXT:    xvpickve.d $xr1, $xr0, 3
-; LA64-NEXT:    ftint.l.d $fa1, $fa1
-; LA64-NEXT:    movfr2gr.d $a0, $fa1
-; LA64-NEXT:    vinsgr2vr.d $vr2, $a0, 1
-; LA64-NEXT:    ftint.l.d $fa1, $fa0
-; LA64-NEXT:    movfr2gr.d $a0, $fa1
-; LA64-NEXT:    vinsgr2vr.d $vr1, $a0, 0
-; LA64-NEXT:    xvpickve.d $xr0, $xr0, 1
-; LA64-NEXT:    ftint.l.d $fa0, $fa0
-; LA64-NEXT:    movfr2gr.d $a0, $fa0
-; LA64-NEXT:    vinsgr2vr.d $vr1, $a0, 1
-; LA64-NEXT:    xvpermi.q $xr1, $xr2, 2
-; LA64-NEXT:    xvori.b $xr0, $xr1, 0
-; LA64-NEXT:    ret
+; CHECK-LABEL: lrint_v4i64_v4f64:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    xvftint.l.d $xr0, $xr0
+; CHECK-NEXT:    ret
   %r = call <4 x i64> @llvm.lrint.v4i64.v4f64(<4 x double> %x)
   ret <4 x i64> %r
 }
 
 define <4 x i64> @llrint_v4i64_v4f64(<4 x double> %x) nounwind {
-; LA32-LABEL: llrint_v4i64_v4f64:
-; LA32:       # %bb.0:
-; LA32-NEXT:    addi.w $sp, $sp, -128
-; LA32-NEXT:    st.w $ra, $sp, 124 # 4-byte Folded Spill
-; LA32-NEXT:    xvst $xr0, $sp, 80 # 32-byte Folded Spill
-; LA32-NEXT:    xvpickve.d $xr0, $xr0, 2
-; LA32-NEXT:    # kill: def $f0_64 killed $f0_64 killed $xr0
-; LA32-NEXT:    bl llrint
-; LA32-NEXT:    vinsgr2vr.w $vr0, $a0, 0
-; LA32-NEXT:    vinsgr2vr.w $vr0, $a1, 1
-; LA32-NEXT:    xvst $xr0, $sp, 48 # 32-byte Folded Spill
-; LA32-NEXT:    xvld $xr0, $sp, 80 # 32-byte Folded Reload
-; LA32-NEXT:    xvpickve.d $xr0, $xr0, 3
-; LA32-NEXT:    # kill: def $f0_64 killed $f0_64 killed $xr0
-; LA32-NEXT:    bl llrint
-; LA32-NEXT:    xvld $xr0, $sp, 48 # 32-byte Folded Reload
-; LA32-NEXT:    vinsgr2vr.w $vr0, $a0, 2
-; LA32-NEXT:    vinsgr2vr.w $vr0, $a1, 3
-; LA32-NEXT:    xvst $xr0, $sp, 48 # 32-byte Folded Spill
-; LA32-NEXT:    xvld $xr0, $sp, 80 # 32-byte Folded Reload
-; LA32-NEXT:    # kill: def $f0_64 killed $f0_64 killed $xr0
-; LA32-NEXT:    bl llrint
-; LA32-NEXT:    vinsgr2vr.w $vr0, $a0, 0
-; LA32-NEXT:    vinsgr2vr.w $vr0, $a1, 1
-; LA32-NEXT:    xvst $xr0, $sp, 16 # 32-byte Folded Spill
-; LA32-NEXT:    xvld $xr0, $sp, 80 # 32-byte Folded Reload
-; LA32-NEXT:    xvpickve.d $xr0, $xr0, 1
-; LA32-NEXT:    # kill: def $f0_64 killed $f0_64 killed $xr0
-; LA32-NEXT:    bl llrint
-; LA32-NEXT:    xvld $xr1, $sp, 16 # 32-byte Folded Reload
-; LA32-NEXT:    vinsgr2vr.w $vr1, $a0, 2
-; LA32-NEXT:    vinsgr2vr.w $vr1, $a1, 3
-; LA32-NEXT:    xvld $xr0, $sp, 48 # 32-byte Folded Reload
-; LA32-NEXT:    xvpermi.q $xr1, $xr0, 2
-; LA32-NEXT:    xvori.b $xr0, $xr1, 0
-; LA32-NEXT:    ld.w $ra, $sp, 124 # 4-byte Folded Reload
-; LA32-NEXT:    addi.w $sp, $sp, 128
-; LA32-NEXT:    ret
-;
-; LA64-LABEL: llrint_v4i64_v4f64:
-; LA64:       # %bb.0:
-; LA64-NEXT:    xvpickve.d $xr1, $xr0, 2
-; LA64-NEXT:    ftint.l.d $fa1, $fa1
-; LA64-NEXT:    movfr2gr.d $a0, $fa1
-; LA64-NEXT:    vinsgr2vr.d $vr2, $a0, 0
-; LA64-NEXT:    xvpickve.d $xr1, $xr0, 3
-; LA64-NEXT:    ftint.l.d $fa1, $fa1
-; LA64-NEXT:    movfr2gr.d $a0, $fa1
-; LA64-NEXT:    vinsgr2vr.d $vr2, $a0, 1
-; LA64-NEXT:    ftint.l.d $fa1, $fa0
-; LA64-NEXT:    movfr2gr.d $a0, $fa1
-; LA64-NEXT:    vinsgr2vr.d $vr1, $a0, 0
-; LA64-NEXT:    xvpickve.d $xr0, $xr0, 1
-; LA64-NEXT:    ftint.l.d $fa0, $fa0
-; LA64-NEXT:    movfr2gr.d $a0, $fa0
-; LA64-NEXT:    vinsgr2vr.d $vr1, $a0, 1
-; LA64-NEXT:    xvpermi.q $xr1, $xr2, 2
-; LA64-NEXT:    xvori.b $xr0, $xr1, 0
-; LA64-NEXT:    ret
+; CHECK-LABEL: llrint_v4i64_v4f64:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    xvftint.l.d $xr0, $xr0
+; CHECK-NEXT:    ret
   %r = call <4 x i64> @llvm.llrint.v4i64.v4f64(<4 x double> %x)
   ret <4 x i64> %r
 }
@@ -236,3 +62,6 @@ define <4 x i32> @lrint_v4i32_v4f64(<4 x double> %x) nounwind {
   %r = call <4 x i32> @llvm.lrint.v4i32.v4f64(<4 x double> %x)
   ret <4 x i32> %r
 }
+;; NOTE: These prefixes are unused and the list is autogenerated. Do not add tests below this line:
+; LA32: {{.*}}
+; LA64: {{.*}}

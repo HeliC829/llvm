@@ -2889,6 +2889,12 @@ def : Pat<(v4f64 (uint_to_fp v4i32:$vj)),
 def : Pat<(v8f32 (loongarch_vffint_s_l (v4i64 LASX256:$xj), (v4i64 LASX256:$xk))),
           (XVFFINT_S_L LASX256:$xj, LASX256:$xk)>;
 
+// XVFTINT_{W_S/L_D}
+foreach Op = [lrint, llrint] in {
+  def : Pat<(v8i32 (Op v8f32:$vj)), (XVFTINT_W_S v8f32:$vj)>;
+  def : Pat<(v4i64 (Op v4f64:$vj)), (XVFTINT_L_D v4f64:$vj)>;
+}
+
 // XVFTINTRZ_{W_S/L_D}
 def : Pat<(v8i32 (fp_to_sint v8f32:$vj)), (XVFTINTRZ_W_S v8f32:$vj)>;
 def : Pat<(v4i64 (fp_to_sint v4f64:$vj)), (XVFTINTRZ_L_D v4f64:$vj)>;

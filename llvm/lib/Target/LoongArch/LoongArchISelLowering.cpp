@@ -388,6 +388,7 @@ LoongArchTargetLowering::LoongArchTargetLowering(const TargetMachine &TM,
       setOperationAction(ISD::FCEIL, VT, Legal);
       setOperationAction(ISD::FFLOOR, VT, Legal);
       setOperationAction(ISD::FTRUNC, VT, Legal);
+      setOperationAction({ISD::LRINT, ISD::LLRINT}, VT, Custom);
       setOperationAction(ISD::FROUNDEVEN, VT, Legal);
       setOperationAction(ISD::FMINNUM, VT, Legal);
       setOperationAction(ISD::FMAXNUM, VT, Legal);
@@ -493,6 +494,7 @@ LoongArchTargetLowering::LoongArchTargetLowering(const TargetMachine &TM,
       setOperationAction(ISD::FCEIL, VT, Legal);
       setOperationAction(ISD::FFLOOR, VT, Legal);
       setOperationAction(ISD::FTRUNC, VT, Legal);
+      setOperationAction({ISD::LRINT, ISD::LLRINT}, VT, Custom);
       setOperationAction(ISD::FROUNDEVEN, VT, Legal);
       setOperationAction(ISD::FMINNUM, VT, Legal);
       setOperationAction(ISD::FMAXNUM, VT, Legal);
@@ -4721,6 +4723,13 @@ SDValue LoongArchTargetLowering::lowerLRINT(SDValue Op,
   SDLoc DL(Op);
   EVT VT = Op.getValueType();
   SDValue Src = Op.getOperand(0);
+
+  // [X]VFTINT_{W_S,L_D} only convert between elements of the same width.
+  if (VT.isVector()) {
+    if (VT.getScalarSizeInBits() == Src.getValueType().getScalarSizeInBits())
+      return Op;
+    return SDValue();
+  }
 
   assert((VT == MVT::i32 || (VT == MVT::i64 && Subtarget.hasBasicD())) &&
          "Unexpected custom legalisation");
