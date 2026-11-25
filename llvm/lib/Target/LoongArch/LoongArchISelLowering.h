@@ -239,6 +239,7 @@ private:
   SDValue lowerFP_TO_SINT(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerFP_TO_UINT(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerFP_TO_SINT_SAT(SDValue Op, SelectionDAG &DAG) const;
+  SDValue lowerLRINT(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerBITCAST(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerUINT_TO_FP(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerUINT_TO_FPToF32(SDValue Op, SelectionDAG &DAG) const;

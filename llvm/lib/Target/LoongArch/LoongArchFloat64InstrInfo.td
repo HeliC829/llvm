@@ -348,6 +348,7 @@ def : RegRegStPat<store, FSTX_D, FPR64, f64>;
 def : Pat<(loongarch_ftint FPR64:$src), (FTINTRZ_W_D FPR64:$src)>;
 def : Pat<(f64 (loongarch_ftint FPR64:$src)), (FTINTRZ_L_D FPR64:$src)>;
 def : Pat<(loongarch_ftint FPR32:$src), (FTINTRZ_L_S FPR32:$src)>;
+def : Pat<(loongarch_ftint_current FPR64:$src), (FTINT_W_D FPR64:$src)>;
 
 // f64 -> f32
 def : Pat<(f32 (fpround FPR64:$src)), (FCVT_S_D FPR64:$src)>;
@@ -408,6 +409,11 @@ def : Pat<(f64 fpimm0), (MOVGR2FRH_W (MOVGR2FR_W_64 R0), R0)>;
 def : Pat<(f64 fpimm0neg), (FNEG_D (MOVGR2FRH_W (MOVGR2FR_W_64 R0), R0))>;
 def : Pat<(f64 fpimm1), (FCVT_D_S (FFINT_S_W (MOVGR2FR_W (ADDI_W R0, 1))))>;
 } // Predicates = [HasBasicD, IsLA32]
+
+let Predicates = [HasBasicD, IsLA64] in {
+def : Pat<(f64 (loongarch_ftint_current FPR32:$src)), (FTINT_L_S FPR32:$src)>;
+def : Pat<(f64 (loongarch_ftint_current FPR64:$src)), (FTINT_L_D FPR64:$src)>;
+}
 
 /// Convert int to FP
 

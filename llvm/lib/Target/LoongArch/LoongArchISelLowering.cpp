@@ -176,6 +176,7 @@ LoongArchTargetLowering::LoongArchTargetLowering(const TargetMachine &TM,
     setOperationAction(ISD::SRA, MVT::i32, Custom);
     setOperationAction(ISD::SRL, MVT::i32, Custom);
     setOperationAction(ISD::FP_TO_SINT, MVT::i32, Custom);
+    setOperationAction({ISD::LRINT, ISD::LLRINT}, MVT::i32, Custom);
     setOperationAction(ISD::BITCAST, MVT::i32, Custom);
     setOperationAction(ISD::ROTR, MVT::i32, Custom);
     setOperationAction(ISD::ROTL, MVT::i32, Custom);
@@ -225,6 +226,10 @@ LoongArchTargetLowering::LoongArchTargetLowering(const TargetMachine &TM,
     setOperationAction(ISD::ConstantFP, MVT::f32, Custom);
     setOperationAction(ISD::SELECT_CC, MVT::f32, Expand);
     setOperationAction(ISD::BR_CC, MVT::f32, Expand);
+    // FTINT_L_S requires D, so LA64 without D keeps the libcall for i64
+    // results. i32 results are handled in ReplaceNodeResults.
+    if (!Subtarget.is64Bit() || Subtarget.hasBasicD())
+      setOperationAction({ISD::LRINT, ISD::LLRINT}, MVT::f32, Custom);
     setOperationAction(ISD::FMA, MVT::f32, Legal);
     setOperationAction(ISD::FMINNUM_IEEE, MVT::f32, Legal);
     setOperationAction(ISD::FMINNUM, MVT::f32, Legal);
@@ -275,6 +280,7 @@ LoongArchTargetLowering::LoongArchTargetLowering(const TargetMachine &TM,
     setOperationAction(ISD::ConstantFP, MVT::f64, Custom);
     setOperationAction(ISD::SELECT_CC, MVT::f64, Expand);
     setOperationAction(ISD::BR_CC, MVT::f64, Expand);
+    setOperationAction({ISD::LRINT, ISD::LLRINT}, MVT::f64, Custom);
     setOperationAction(ISD::STRICT_FSETCCS, MVT::f64, Legal);
     setOperationAction(ISD::STRICT_FSETCC, MVT::f64, Legal);
     setOperationAction(ISD::FMA, MVT::f64, Legal);
@@ -630,6 +636,9 @@ SDValue LoongArchTargetLowering::LowerOperation(SDValue Op,
     return lowerFP_TO_UINT(Op, DAG);
   case ISD::FP_TO_SINT_SAT:
     return lowerFP_TO_SINT_SAT(Op, DAG);
+  case ISD::LRINT:
+  case ISD::LLRINT:
+    return lowerLRINT(Op, DAG);
   case ISD::BITCAST:
     return lowerBITCAST(Op, DAG);
   case ISD::UINT_TO_FP:
@@ -4705,6 +4714,21 @@ SDValue LoongArchTargetLowering::lowerFP_TO_SINT_SAT(SDValue Op,
   return SDValue();
 }
 
+// FTINT_{W,L}_{S,D} round using the current FCSR rounding mode, matching
+// lrint/llrint.
+SDValue LoongArchTargetLowering::lowerLRINT(SDValue Op,
+                                            SelectionDAG &DAG) const {
+  SDLoc DL(Op);
+  EVT VT = Op.getValueType();
+  SDValue Src = Op.getOperand(0);
+
+  assert((VT == MVT::i32 || (VT == MVT::i64 && Subtarget.hasBasicD())) &&
+         "Unexpected custom legalisation");
+  MVT FVT = VT == MVT::i64 ? MVT::f64 : MVT::f32;
+  SDValue Ftint = DAG.getNode(LoongArchISD::FTINT_CURRENT, DL, FVT, Src);
+  return DAG.getBitcast(VT, Ftint);
+}
+
 SDValue LoongArchTargetLowering::lowerFP_TO_UINT(SDValue Op,
                                                  SelectionDAG &DAG) const {
   if (!Subtarget.hasExtLSX())
@@ -5985,6 +6009,20 @@ void LoongArchTargetLowering::ReplaceNodeResults(
     Results.push_back(Res);
     Results.push_back(Chain);
     break;
+  }
+  case ISD::LRINT:
+  case ISD::LLRINT: {
+    assert(VT == MVT::i32 && Subtarget.is64Bit() &&
+           "Unexpected custom legalisation");
+    SDValue Src = N->getOperand(0);
+    EVT SrcVT = Src.getValueType();
+    if (SrcVT == MVT::f16 && Subtarget.hasBasicF())
+      Src = DAG.getNode(ISD::FP_EXTEND, DL, MVT::f32, Src);
+    else if (!isTypeLegal(SrcVT) || (SrcVT != MVT::f32 && SrcVT != MVT::f64))
+      return;
+    SDValue Ftint = DAG.getNode(LoongArchISD::FTINT_CURRENT, DL, MVT::f32, Src);
+    Results.push_back(DAG.getBitcast(VT, Ftint));
+    return;
   }
   case ISD::FP_TO_SINT: {
     assert(VT == MVT::i32 && Subtarget.is64Bit() &&

@@ -39,9 +39,11 @@ define ITy @test_lrint_ixx_f16(half %x) nounwind {
 ; LA32D-I32-NEXT:    addi.w $sp, $sp, -16
 ; LA32D-I32-NEXT:    st.w $ra, $sp, 12 # 4-byte Folded Spill
 ; LA32D-I32-NEXT:    bl __extendhfsf2
+; LA32D-I32-NEXT:    ftint.w.s $fa0, $fa0
+; LA32D-I32-NEXT:    movfr2gr.s $a0, $fa0
 ; LA32D-I32-NEXT:    ld.w $ra, $sp, 12 # 4-byte Folded Reload
 ; LA32D-I32-NEXT:    addi.w $sp, $sp, 16
-; LA32D-I32-NEXT:    b lrintf
+; LA32D-I32-NEXT:    ret
 ;
 ; LA32D-I64-LABEL: test_lrint_ixx_f16:
 ; LA32D-I64:       # %bb.0:
@@ -59,8 +61,8 @@ define ITy @test_lrint_ixx_f16(half %x) nounwind {
 ; LA64F-I32-NEXT:    st.d $ra, $sp, 8 # 8-byte Folded Spill
 ; LA64F-I32-NEXT:    pcaddu18i $ra, %call36(__extendhfsf2)
 ; LA64F-I32-NEXT:    jirl $ra, $ra, 0
-; LA64F-I32-NEXT:    pcaddu18i $ra, %call36(lrintf)
-; LA64F-I32-NEXT:    jirl $ra, $ra, 0
+; LA64F-I32-NEXT:    ftint.w.s $fa0, $fa0
+; LA64F-I32-NEXT:    movfr2gr.s $a0, $fa0
 ; LA64F-I32-NEXT:    ld.d $ra, $sp, 8 # 8-byte Folded Reload
 ; LA64F-I32-NEXT:    addi.d $sp, $sp, 16
 ; LA64F-I32-NEXT:    ret
@@ -82,8 +84,8 @@ define ITy @test_lrint_ixx_f16(half %x) nounwind {
 ; LA64-I32-NEXT:    st.d $ra, $sp, 8 # 8-byte Folded Spill
 ; LA64-I32-NEXT:    pcaddu18i $ra, %call36(__extendhfsf2)
 ; LA64-I32-NEXT:    jirl $ra, $ra, 0
-; LA64-I32-NEXT:    pcaddu18i $ra, %call36(lrintf)
-; LA64-I32-NEXT:    jirl $ra, $ra, 0
+; LA64-I32-NEXT:    ftint.w.s $fa0, $fa0
+; LA64-I32-NEXT:    movfr2gr.s $a0, $fa0
 ; LA64-I32-NEXT:    ld.d $ra, $sp, 8 # 8-byte Folded Reload
 ; LA64-I32-NEXT:    addi.d $sp, $sp, 16
 ; LA64-I32-NEXT:    ret
@@ -94,10 +96,11 @@ define ITy @test_lrint_ixx_f16(half %x) nounwind {
 ; LA64-I64-NEXT:    st.d $ra, $sp, 8 # 8-byte Folded Spill
 ; LA64-I64-NEXT:    pcaddu18i $ra, %call36(__extendhfsf2)
 ; LA64-I64-NEXT:    jirl $ra, $ra, 0
+; LA64-I64-NEXT:    ftint.l.s $fa0, $fa0
+; LA64-I64-NEXT:    movfr2gr.d $a0, $fa0
 ; LA64-I64-NEXT:    ld.d $ra, $sp, 8 # 8-byte Folded Reload
 ; LA64-I64-NEXT:    addi.d $sp, $sp, 16
-; LA64-I64-NEXT:    pcaddu18i $t8, %call36(lrintf)
-; LA64-I64-NEXT:    jr $t8
+; LA64-I64-NEXT:    ret
   %res = tail call ITy @llvm.lrint.ITy.f16(half %x)
   ret ITy %res
 }
@@ -131,9 +134,11 @@ define ITy @test_llrint_ixx_f16(half %x) nounwind {
 ; LA32D-I32-NEXT:    addi.w $sp, $sp, -16
 ; LA32D-I32-NEXT:    st.w $ra, $sp, 12 # 4-byte Folded Spill
 ; LA32D-I32-NEXT:    bl __extendhfsf2
+; LA32D-I32-NEXT:    ftint.w.s $fa0, $fa0
+; LA32D-I32-NEXT:    movfr2gr.s $a0, $fa0
 ; LA32D-I32-NEXT:    ld.w $ra, $sp, 12 # 4-byte Folded Reload
 ; LA32D-I32-NEXT:    addi.w $sp, $sp, 16
-; LA32D-I32-NEXT:    b llrintf
+; LA32D-I32-NEXT:    ret
 ;
 ; LA32D-I64-LABEL: test_llrint_ixx_f16:
 ; LA32D-I64:       # %bb.0:
@@ -151,8 +156,8 @@ define ITy @test_llrint_ixx_f16(half %x) nounwind {
 ; LA64F-I32-NEXT:    st.d $ra, $sp, 8 # 8-byte Folded Spill
 ; LA64F-I32-NEXT:    pcaddu18i $ra, %call36(__extendhfsf2)
 ; LA64F-I32-NEXT:    jirl $ra, $ra, 0
-; LA64F-I32-NEXT:    pcaddu18i $ra, %call36(llrintf)
-; LA64F-I32-NEXT:    jirl $ra, $ra, 0
+; LA64F-I32-NEXT:    ftint.w.s $fa0, $fa0
+; LA64F-I32-NEXT:    movfr2gr.s $a0, $fa0
 ; LA64F-I32-NEXT:    ld.d $ra, $sp, 8 # 8-byte Folded Reload
 ; LA64F-I32-NEXT:    addi.d $sp, $sp, 16
 ; LA64F-I32-NEXT:    ret
@@ -174,8 +179,8 @@ define ITy @test_llrint_ixx_f16(half %x) nounwind {
 ; LA64-I32-NEXT:    st.d $ra, $sp, 8 # 8-byte Folded Spill
 ; LA64-I32-NEXT:    pcaddu18i $ra, %call36(__extendhfsf2)
 ; LA64-I32-NEXT:    jirl $ra, $ra, 0
-; LA64-I32-NEXT:    pcaddu18i $ra, %call36(llrintf)
-; LA64-I32-NEXT:    jirl $ra, $ra, 0
+; LA64-I32-NEXT:    ftint.w.s $fa0, $fa0
+; LA64-I32-NEXT:    movfr2gr.s $a0, $fa0
 ; LA64-I32-NEXT:    ld.d $ra, $sp, 8 # 8-byte Folded Reload
 ; LA64-I32-NEXT:    addi.d $sp, $sp, 16
 ; LA64-I32-NEXT:    ret
@@ -186,10 +191,11 @@ define ITy @test_llrint_ixx_f16(half %x) nounwind {
 ; LA64-I64-NEXT:    st.d $ra, $sp, 8 # 8-byte Folded Spill
 ; LA64-I64-NEXT:    pcaddu18i $ra, %call36(__extendhfsf2)
 ; LA64-I64-NEXT:    jirl $ra, $ra, 0
+; LA64-I64-NEXT:    ftint.l.s $fa0, $fa0
+; LA64-I64-NEXT:    movfr2gr.d $a0, $fa0
 ; LA64-I64-NEXT:    ld.d $ra, $sp, 8 # 8-byte Folded Reload
 ; LA64-I64-NEXT:    addi.d $sp, $sp, 16
-; LA64-I64-NEXT:    pcaddu18i $t8, %call36(llrintf)
-; LA64-I64-NEXT:    jr $t8
+; LA64-I64-NEXT:    ret
   %res = tail call ITy @llvm.llrint.ITy.f16(half %x)
   ret ITy %res
 }
@@ -215,7 +221,9 @@ define ITy @test_lrint_ixx_f32(float %x) nounwind {
 ;
 ; LA32D-I32-LABEL: test_lrint_ixx_f32:
 ; LA32D-I32:       # %bb.0:
-; LA32D-I32-NEXT:    b lrintf
+; LA32D-I32-NEXT:    ftint.w.s $fa0, $fa0
+; LA32D-I32-NEXT:    movfr2gr.s $a0, $fa0
+; LA32D-I32-NEXT:    ret
 ;
 ; LA32D-I64-LABEL: test_lrint_ixx_f32:
 ; LA32D-I64:       # %bb.0:
@@ -228,12 +236,8 @@ define ITy @test_lrint_ixx_f32(float %x) nounwind {
 ;
 ; LA64F-I32-LABEL: test_lrint_ixx_f32:
 ; LA64F-I32:       # %bb.0:
-; LA64F-I32-NEXT:    addi.d $sp, $sp, -16
-; LA64F-I32-NEXT:    st.d $ra, $sp, 8 # 8-byte Folded Spill
-; LA64F-I32-NEXT:    pcaddu18i $ra, %call36(lrintf)
-; LA64F-I32-NEXT:    jirl $ra, $ra, 0
-; LA64F-I32-NEXT:    ld.d $ra, $sp, 8 # 8-byte Folded Reload
-; LA64F-I32-NEXT:    addi.d $sp, $sp, 16
+; LA64F-I32-NEXT:    ftint.w.s $fa0, $fa0
+; LA64F-I32-NEXT:    movfr2gr.s $a0, $fa0
 ; LA64F-I32-NEXT:    ret
 ;
 ; LA64F-I64-LABEL: test_lrint_ixx_f32:
@@ -243,18 +247,15 @@ define ITy @test_lrint_ixx_f32(float %x) nounwind {
 ;
 ; LA64-I32-LABEL: test_lrint_ixx_f32:
 ; LA64-I32:       # %bb.0:
-; LA64-I32-NEXT:    addi.d $sp, $sp, -16
-; LA64-I32-NEXT:    st.d $ra, $sp, 8 # 8-byte Folded Spill
-; LA64-I32-NEXT:    pcaddu18i $ra, %call36(lrintf)
-; LA64-I32-NEXT:    jirl $ra, $ra, 0
-; LA64-I32-NEXT:    ld.d $ra, $sp, 8 # 8-byte Folded Reload
-; LA64-I32-NEXT:    addi.d $sp, $sp, 16
+; LA64-I32-NEXT:    ftint.w.s $fa0, $fa0
+; LA64-I32-NEXT:    movfr2gr.s $a0, $fa0
 ; LA64-I32-NEXT:    ret
 ;
 ; LA64-I64-LABEL: test_lrint_ixx_f32:
 ; LA64-I64:       # %bb.0:
-; LA64-I64-NEXT:    pcaddu18i $t8, %call36(lrintf)
-; LA64-I64-NEXT:    jr $t8
+; LA64-I64-NEXT:    ftint.l.s $fa0, $fa0
+; LA64-I64-NEXT:    movfr2gr.d $a0, $fa0
+; LA64-I64-NEXT:    ret
   %res = tail call ITy @llvm.lrint.ITy.f32(float %x)
   ret ITy %res
 }
@@ -280,7 +281,9 @@ define ITy @test_llrint_ixx_f32(float %x) nounwind {
 ;
 ; LA32D-I32-LABEL: test_llrint_ixx_f32:
 ; LA32D-I32:       # %bb.0:
-; LA32D-I32-NEXT:    b llrintf
+; LA32D-I32-NEXT:    ftint.w.s $fa0, $fa0
+; LA32D-I32-NEXT:    movfr2gr.s $a0, $fa0
+; LA32D-I32-NEXT:    ret
 ;
 ; LA32D-I64-LABEL: test_llrint_ixx_f32:
 ; LA32D-I64:       # %bb.0:
@@ -293,12 +296,8 @@ define ITy @test_llrint_ixx_f32(float %x) nounwind {
 ;
 ; LA64F-I32-LABEL: test_llrint_ixx_f32:
 ; LA64F-I32:       # %bb.0:
-; LA64F-I32-NEXT:    addi.d $sp, $sp, -16
-; LA64F-I32-NEXT:    st.d $ra, $sp, 8 # 8-byte Folded Spill
-; LA64F-I32-NEXT:    pcaddu18i $ra, %call36(llrintf)
-; LA64F-I32-NEXT:    jirl $ra, $ra, 0
-; LA64F-I32-NEXT:    ld.d $ra, $sp, 8 # 8-byte Folded Reload
-; LA64F-I32-NEXT:    addi.d $sp, $sp, 16
+; LA64F-I32-NEXT:    ftint.w.s $fa0, $fa0
+; LA64F-I32-NEXT:    movfr2gr.s $a0, $fa0
 ; LA64F-I32-NEXT:    ret
 ;
 ; LA64F-I64-LABEL: test_llrint_ixx_f32:
@@ -308,18 +307,15 @@ define ITy @test_llrint_ixx_f32(float %x) nounwind {
 ;
 ; LA64-I32-LABEL: test_llrint_ixx_f32:
 ; LA64-I32:       # %bb.0:
-; LA64-I32-NEXT:    addi.d $sp, $sp, -16
-; LA64-I32-NEXT:    st.d $ra, $sp, 8 # 8-byte Folded Spill
-; LA64-I32-NEXT:    pcaddu18i $ra, %call36(llrintf)
-; LA64-I32-NEXT:    jirl $ra, $ra, 0
-; LA64-I32-NEXT:    ld.d $ra, $sp, 8 # 8-byte Folded Reload
-; LA64-I32-NEXT:    addi.d $sp, $sp, 16
+; LA64-I32-NEXT:    ftint.w.s $fa0, $fa0
+; LA64-I32-NEXT:    movfr2gr.s $a0, $fa0
 ; LA64-I32-NEXT:    ret
 ;
 ; LA64-I64-LABEL: test_llrint_ixx_f32:
 ; LA64-I64:       # %bb.0:
-; LA64-I64-NEXT:    pcaddu18i $t8, %call36(llrintf)
-; LA64-I64-NEXT:    jr $t8
+; LA64-I64-NEXT:    ftint.l.s $fa0, $fa0
+; LA64-I64-NEXT:    movfr2gr.d $a0, $fa0
+; LA64-I64-NEXT:    ret
   %res = tail call ITy @llvm.llrint.ITy.f32(float %x)
   ret ITy %res
 }
@@ -345,7 +341,9 @@ define ITy @test_lrint_ixx_f64(double %x) nounwind {
 ;
 ; LA32D-I32-LABEL: test_lrint_ixx_f64:
 ; LA32D-I32:       # %bb.0:
-; LA32D-I32-NEXT:    b lrint
+; LA32D-I32-NEXT:    ftint.w.d $fa0, $fa0
+; LA32D-I32-NEXT:    movfr2gr.s $a0, $fa0
+; LA32D-I32-NEXT:    ret
 ;
 ; LA32D-I64-LABEL: test_lrint_ixx_f64:
 ; LA32D-I64:       # %bb.0:
@@ -378,18 +376,15 @@ define ITy @test_lrint_ixx_f64(double %x) nounwind {
 ;
 ; LA64-I32-LABEL: test_lrint_ixx_f64:
 ; LA64-I32:       # %bb.0:
-; LA64-I32-NEXT:    addi.d $sp, $sp, -16
-; LA64-I32-NEXT:    st.d $ra, $sp, 8 # 8-byte Folded Spill
-; LA64-I32-NEXT:    pcaddu18i $ra, %call36(lrint)
-; LA64-I32-NEXT:    jirl $ra, $ra, 0
-; LA64-I32-NEXT:    ld.d $ra, $sp, 8 # 8-byte Folded Reload
-; LA64-I32-NEXT:    addi.d $sp, $sp, 16
+; LA64-I32-NEXT:    ftint.w.d $fa0, $fa0
+; LA64-I32-NEXT:    movfr2gr.s $a0, $fa0
 ; LA64-I32-NEXT:    ret
 ;
 ; LA64-I64-LABEL: test_lrint_ixx_f64:
 ; LA64-I64:       # %bb.0:
-; LA64-I64-NEXT:    pcaddu18i $t8, %call36(lrint)
-; LA64-I64-NEXT:    jr $t8
+; LA64-I64-NEXT:    ftint.l.d $fa0, $fa0
+; LA64-I64-NEXT:    movfr2gr.d $a0, $fa0
+; LA64-I64-NEXT:    ret
   %res = tail call ITy @llvm.lrint.ITy.f64(double %x)
   ret ITy %res
 }
@@ -415,7 +410,9 @@ define ITy @test_llrint_ixx_f64(double %x) nounwind {
 ;
 ; LA32D-I32-LABEL: test_llrint_ixx_f64:
 ; LA32D-I32:       # %bb.0:
-; LA32D-I32-NEXT:    b llrint
+; LA32D-I32-NEXT:    ftint.w.d $fa0, $fa0
+; LA32D-I32-NEXT:    movfr2gr.s $a0, $fa0
+; LA32D-I32-NEXT:    ret
 ;
 ; LA32D-I64-LABEL: test_llrint_ixx_f64:
 ; LA32D-I64:       # %bb.0:
@@ -448,18 +445,15 @@ define ITy @test_llrint_ixx_f64(double %x) nounwind {
 ;
 ; LA64-I32-LABEL: test_llrint_ixx_f64:
 ; LA64-I32:       # %bb.0:
-; LA64-I32-NEXT:    addi.d $sp, $sp, -16
-; LA64-I32-NEXT:    st.d $ra, $sp, 8 # 8-byte Folded Spill
-; LA64-I32-NEXT:    pcaddu18i $ra, %call36(llrint)
-; LA64-I32-NEXT:    jirl $ra, $ra, 0
-; LA64-I32-NEXT:    ld.d $ra, $sp, 8 # 8-byte Folded Reload
-; LA64-I32-NEXT:    addi.d $sp, $sp, 16
+; LA64-I32-NEXT:    ftint.w.d $fa0, $fa0
+; LA64-I32-NEXT:    movfr2gr.s $a0, $fa0
 ; LA64-I32-NEXT:    ret
 ;
 ; LA64-I64-LABEL: test_llrint_ixx_f64:
 ; LA64-I64:       # %bb.0:
-; LA64-I64-NEXT:    pcaddu18i $t8, %call36(llrint)
-; LA64-I64-NEXT:    jr $t8
+; LA64-I64-NEXT:    ftint.l.d $fa0, $fa0
+; LA64-I64-NEXT:    movfr2gr.d $a0, $fa0
+; LA64-I64-NEXT:    ret
   %res = tail call ITy @llvm.llrint.ITy.f64(double %x)
   ret ITy %res
 }
