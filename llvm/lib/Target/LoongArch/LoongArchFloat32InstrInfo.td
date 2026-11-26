@@ -41,6 +41,7 @@ def loongarch_movfr2gr_s_la64
     : SDNode<"LoongArchISD::MOVFR2GR_S_LA64", SDT_LoongArchMOVFR2GR_S_LA64>;
 
 def loongarch_ftint : SDNode<"LoongArchISD::FTINT", SDT_LoongArchFTINT>;
+def loongarch_fscaleb : SDNode<"LoongArchISD::FSCALEB", SDTFPBinOp>;
 
 // Floating point approximate reciprocal operation
 def loongarch_frecipe : SDNode<"LoongArchISD::FRECIPE", SDT_LoongArchFRECIPE>;
@@ -388,6 +389,9 @@ def : RegRegStPat<store, FSTX_S, FPR32, f32>;
 def : Pat<(f32 fpimm0), (MOVGR2FR_W R0)>;
 def : Pat<(f32 fpimm0neg), (FNEG_S (MOVGR2FR_W R0))>;
 def : Pat<(f32 fpimm1), (FFINT_S_W (MOVGR2FR_W (ADDI_W R0, 1)))>;
+
+def : Pat<(loongarch_fscaleb FPR32:$src, FPR32:$exp),
+          (FSCALEB_S FPR32:$src, FPR32:$exp)>;
 
 // FP Conversion
 def : Pat<(loongarch_ftint FPR32:$src), (FTINTRZ_W_S FPR32:$src)>;

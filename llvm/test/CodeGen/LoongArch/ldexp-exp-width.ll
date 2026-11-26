@@ -8,25 +8,170 @@
 define double @ldexp_f64_i16(double %x, i16 %n) nounwind {
 ; LA32-LABEL: ldexp_f64_i16:
 ; LA32:       # %bb.0:
-; LA32-NEXT:    addi.w $sp, $sp, -16
-; LA32-NEXT:    st.w $ra, $sp, 12 # 4-byte Folded Spill
 ; LA32-NEXT:    slli.w $a0, $a0, 16
+; LA32-NEXT:    srai.w $a1, $a0, 31
 ; LA32-NEXT:    srai.w $a0, $a0, 16
-; LA32-NEXT:    bl ldexp
-; LA32-NEXT:    ld.w $ra, $sp, 12 # 4-byte Folded Reload
-; LA32-NEXT:    addi.w $sp, $sp, 16
+; LA32-NEXT:    movgr2fr.w $fa1, $a0
+; LA32-NEXT:    movgr2frh.w $fa1, $a1
+; LA32-NEXT:    fscaleb.d $fa0, $fa0, $fa1
 ; LA32-NEXT:    ret
 ;
 ; LA64-LABEL: ldexp_f64_i16:
 ; LA64:       # %bb.0:
-; LA64-NEXT:    addi.d $sp, $sp, -16
-; LA64-NEXT:    st.d $ra, $sp, 8 # 8-byte Folded Spill
 ; LA64-NEXT:    ext.w.h $a0, $a0
-; LA64-NEXT:    pcaddu18i $ra, %call36(ldexp)
-; LA64-NEXT:    jirl $ra, $ra, 0
-; LA64-NEXT:    ld.d $ra, $sp, 8 # 8-byte Folded Reload
-; LA64-NEXT:    addi.d $sp, $sp, 16
+; LA64-NEXT:    movgr2fr.d $fa1, $a0
+; LA64-NEXT:    fscaleb.d $fa0, $fa0, $fa1
 ; LA64-NEXT:    ret
   %r = call double @llvm.ldexp.f64.i16(double %x, i16 %n)
+  ret double %r
+}
+
+define float @ldexp_f32_i64(float %x, i64 %n) nounwind {
+; LA32-LABEL: ldexp_f32_i64:
+; LA32:       # %bb.0:
+; LA32-NEXT:    lu12i.w $a2, 524287
+; LA32-NEXT:    ori $a3, $a2, 4095
+; LA32-NEXT:    beq $a1, $zero, .LBB1_2
+; LA32-NEXT:  # %bb.1:
+; LA32-NEXT:    slti $a2, $a1, 0
+; LA32-NEXT:    beq $a2, $zero, .LBB1_3
+; LA32-NEXT:    b .LBB1_4
+; LA32-NEXT:  .LBB1_2:
+; LA32-NEXT:    sltu $a2, $a0, $a3
+; LA32-NEXT:    bne $a2, $zero, .LBB1_4
+; LA32-NEXT:  .LBB1_3:
+; LA32-NEXT:    move $a0, $a3
+; LA32-NEXT:  .LBB1_4:
+; LA32-NEXT:    sub.w $a2, $zero, $a2
+; LA32-NEXT:    and $a2, $a2, $a1
+; LA32-NEXT:    addi.w $a3, $zero, -1
+; LA32-NEXT:    lu12i.w $a1, -524288
+; LA32-NEXT:    beq $a2, $a3, .LBB1_6
+; LA32-NEXT:  # %bb.5:
+; LA32-NEXT:    slt $a2, $a3, $a2
+; LA32-NEXT:    beq $a2, $zero, .LBB1_7
+; LA32-NEXT:    b .LBB1_8
+; LA32-NEXT:  .LBB1_6:
+; LA32-NEXT:    sltu $a2, $a1, $a0
+; LA32-NEXT:    bne $a2, $zero, .LBB1_8
+; LA32-NEXT:  .LBB1_7:
+; LA32-NEXT:    move $a0, $a1
+; LA32-NEXT:  .LBB1_8:
+; LA32-NEXT:    movgr2fr.w $fa1, $a0
+; LA32-NEXT:    fscaleb.s $fa0, $fa0, $fa1
+; LA32-NEXT:    ret
+;
+; LA64-LABEL: ldexp_f32_i64:
+; LA64:       # %bb.0:
+; LA64-NEXT:    lu12i.w $a1, 524287
+; LA64-NEXT:    ori $a1, $a1, 4095
+; LA64-NEXT:    slt $a2, $a0, $a1
+; LA64-NEXT:    masknez $a1, $a1, $a2
+; LA64-NEXT:    maskeqz $a0, $a0, $a2
+; LA64-NEXT:    or $a0, $a0, $a1
+; LA64-NEXT:    lu12i.w $a1, -524288
+; LA64-NEXT:    slt $a2, $a1, $a0
+; LA64-NEXT:    maskeqz $a0, $a0, $a2
+; LA64-NEXT:    masknez $a1, $a1, $a2
+; LA64-NEXT:    or $a0, $a0, $a1
+; LA64-NEXT:    movgr2fr.w $fa1, $a0
+; LA64-NEXT:    fscaleb.s $fa0, $fa0, $fa1
+; LA64-NEXT:    ret
+  %r = call float @llvm.ldexp.f32.i64(float %x, i64 %n)
+  ret float %r
+}
+
+define float @ldexp_f32_i64_sext(float %x, i32 %m) nounwind {
+; LA32-LABEL: ldexp_f32_i64_sext:
+; LA32:       # %bb.0:
+; LA32-NEXT:    movgr2fr.w $fa1, $a0
+; LA32-NEXT:    fscaleb.s $fa0, $fa0, $fa1
+; LA32-NEXT:    ret
+;
+; LA64-LABEL: ldexp_f32_i64_sext:
+; LA64:       # %bb.0:
+; LA64-NEXT:    addi.w $a0, $a0, 0
+; LA64-NEXT:    movgr2fr.w $fa1, $a0
+; LA64-NEXT:    fscaleb.s $fa0, $fa0, $fa1
+; LA64-NEXT:    ret
+  %n = sext i32 %m to i64
+  %r = call float @llvm.ldexp.f32.i64(float %x, i64 %n)
+  ret float %r
+}
+
+define double @ldexp_f64_i64(double %x, i64 %n) nounwind {
+; LA32-LABEL: ldexp_f64_i64:
+; LA32:       # %bb.0:
+; LA32-NEXT:    lu12i.w $a2, 524287
+; LA32-NEXT:    ori $a3, $a2, 4095
+; LA32-NEXT:    beq $a1, $zero, .LBB3_2
+; LA32-NEXT:  # %bb.1:
+; LA32-NEXT:    slti $a2, $a1, 0
+; LA32-NEXT:    beq $a2, $zero, .LBB3_3
+; LA32-NEXT:    b .LBB3_4
+; LA32-NEXT:  .LBB3_2:
+; LA32-NEXT:    sltu $a2, $a0, $a3
+; LA32-NEXT:    bne $a2, $zero, .LBB3_4
+; LA32-NEXT:  .LBB3_3:
+; LA32-NEXT:    move $a0, $a3
+; LA32-NEXT:  .LBB3_4:
+; LA32-NEXT:    sub.w $a2, $zero, $a2
+; LA32-NEXT:    and $a2, $a2, $a1
+; LA32-NEXT:    addi.w $a3, $zero, -1
+; LA32-NEXT:    lu12i.w $a1, -524288
+; LA32-NEXT:    beq $a2, $a3, .LBB3_6
+; LA32-NEXT:  # %bb.5:
+; LA32-NEXT:    slt $a2, $a3, $a2
+; LA32-NEXT:    beq $a2, $zero, .LBB3_7
+; LA32-NEXT:    b .LBB3_8
+; LA32-NEXT:  .LBB3_6:
+; LA32-NEXT:    sltu $a2, $a1, $a0
+; LA32-NEXT:    bne $a2, $zero, .LBB3_8
+; LA32-NEXT:  .LBB3_7:
+; LA32-NEXT:    move $a0, $a1
+; LA32-NEXT:  .LBB3_8:
+; LA32-NEXT:    srai.w $a1, $a0, 31
+; LA32-NEXT:    movgr2fr.w $fa1, $a0
+; LA32-NEXT:    movgr2frh.w $fa1, $a1
+; LA32-NEXT:    fscaleb.d $fa0, $fa0, $fa1
+; LA32-NEXT:    ret
+;
+; LA64-LABEL: ldexp_f64_i64:
+; LA64:       # %bb.0:
+; LA64-NEXT:    lu12i.w $a1, 524287
+; LA64-NEXT:    ori $a1, $a1, 4095
+; LA64-NEXT:    slt $a2, $a0, $a1
+; LA64-NEXT:    masknez $a1, $a1, $a2
+; LA64-NEXT:    maskeqz $a0, $a0, $a2
+; LA64-NEXT:    or $a0, $a0, $a1
+; LA64-NEXT:    lu12i.w $a1, -524288
+; LA64-NEXT:    slt $a2, $a1, $a0
+; LA64-NEXT:    maskeqz $a0, $a0, $a2
+; LA64-NEXT:    masknez $a1, $a1, $a2
+; LA64-NEXT:    or $a0, $a0, $a1
+; LA64-NEXT:    movgr2fr.d $fa1, $a0
+; LA64-NEXT:    fscaleb.d $fa0, $fa0, $fa1
+; LA64-NEXT:    ret
+  %r = call double @llvm.ldexp.f64.i64(double %x, i64 %n)
+  ret double %r
+}
+
+define double @ldexp_f64_i64_sext(double %x, i32 %m) nounwind {
+; LA32-LABEL: ldexp_f64_i64_sext:
+; LA32:       # %bb.0:
+; LA32-NEXT:    srai.w $a1, $a0, 31
+; LA32-NEXT:    movgr2fr.w $fa1, $a0
+; LA32-NEXT:    movgr2frh.w $fa1, $a1
+; LA32-NEXT:    fscaleb.d $fa0, $fa0, $fa1
+; LA32-NEXT:    ret
+;
+; LA64-LABEL: ldexp_f64_i64_sext:
+; LA64:       # %bb.0:
+; LA64-NEXT:    addi.w $a0, $a0, 0
+; LA64-NEXT:    movgr2fr.d $fa1, $a0
+; LA64-NEXT:    fscaleb.d $fa0, $fa0, $fa1
+; LA64-NEXT:    ret
+  %n = sext i32 %m to i64
+  %r = call double @llvm.ldexp.f64.i64(double %x, i64 %n)
   ret double %r
 }

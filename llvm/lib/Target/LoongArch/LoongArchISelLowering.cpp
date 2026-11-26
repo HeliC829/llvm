@@ -252,6 +252,13 @@ LoongArchTargetLowering::LoongArchTargetLowering(const TargetMachine &TM,
     if (Subtarget.is64Bit())
       setOperationAction(ISD::FRINT, MVT::f32, Legal);
 
+    // FLDEXP is keyed by the FP type during operation legalization, but by the
+    // exponent type when the type legalizer promotes or expands an illegal
+    // exponent, which would otherwise emit a libcall directly.
+    setOperationAction(ISD::FLDEXP, {MVT::f32, MVT::i8, MVT::i16}, Custom);
+    setOperationAction(ISD::FLDEXP, Subtarget.is64Bit() ? MVT::i32 : MVT::i64,
+                       Custom);
+
     if (!Subtarget.hasBasicD()) {
       setOperationAction(ISD::FP_TO_UINT, MVT::i32, Custom);
       if (Subtarget.is64Bit()) {
@@ -289,6 +296,7 @@ LoongArchTargetLowering::LoongArchTargetLowering(const TargetMachine &TM,
     setOperationAction(ISD::FSINCOS, MVT::f64, Expand);
     setOperationAction(ISD::FPOW, MVT::f64, Expand);
     setOperationAction(ISD::FREM, MVT::f64, LibCall);
+    setOperationAction(ISD::FLDEXP, MVT::f64, Custom);
     setOperationAction(ISD::FP16_TO_FP, MVT::f64, Expand);
     setOperationAction(ISD::FP_TO_FP16, MVT::f64,
                        Subtarget.isSoftFPABI() ? LibCall : Custom);
@@ -624,6 +632,8 @@ SDValue LoongArchTargetLowering::LowerOperation(SDValue Op,
     return lowerShiftRightParts(Op, DAG, false);
   case ISD::ConstantPool:
     return lowerConstantPool(Op, DAG);
+  case ISD::FLDEXP:
+    return lowerFLDEXP(Op, DAG);
   case ISD::FP_TO_SINT:
     return lowerFP_TO_SINT(Op, DAG);
   case ISD::FP_TO_UINT:
@@ -4646,6 +4656,54 @@ SDValue LoongArchTargetLowering::lowerBITCAST(SDValue Op,
     return DAG.getNode(LoongArchISD::BUILD_PAIR_F64, DL, MVT::f64, Lo, Hi);
   }
   return Op;
+}
+
+SDValue LoongArchTargetLowering::lowerFLDEXP(SDValue Op,
+                                             SelectionDAG &DAG) const {
+  EVT VT = Op.getValueType();
+  if ((VT != MVT::f32 && VT != MVT::f64) || !isTypeLegal(VT))
+    return SDValue();
+
+  // FSCALEB.{S,D} reads a signed integer exponent of the FP width from an FPR.
+  // Clamping a wider exponent to the i32 range keeps the result unchanged, as
+  // both bounds already overflow or underflow any non-zero finite input.
+  SDLoc DL(Op);
+  SDValue Exp = Op.getOperand(1);
+  EVT ExpVT = Exp.getValueType();
+  unsigned ExpBits = ExpVT.getSizeInBits();
+  if (ExpBits > 32 && DAG.ComputeNumSignBits(Exp) <= ExpBits - 32) {
+    Exp = DAG.getNode(
+        ISD::SMIN, DL, ExpVT, Exp,
+        DAG.getConstant(APInt::getSignedMaxValue(32).sext(ExpBits), DL, ExpVT));
+    Exp = DAG.getNode(
+        ISD::SMAX, DL, ExpVT, Exp,
+        DAG.getConstant(APInt::getSignedMinValue(32).sext(ExpBits), DL, ExpVT));
+  } else if (ExpBits < 32) {
+    // Only reached from the type legalizer, so an illegal i32 is fine here.
+    Exp = DAG.getNode(ISD::SIGN_EXTEND, DL, MVT::i32, Exp);
+  }
+
+  // During operation legalization the exponent is GRLen wide, so only create
+  // nodes of legal types on that path.
+  SDValue FPExp;
+  if (Subtarget.is64Bit()) {
+    if (VT == MVT::f32) {
+      Exp = DAG.getAnyExtOrTrunc(Exp, DL, MVT::i64);
+      FPExp = DAG.getNode(LoongArchISD::MOVGR2FR_W_LA64, DL, VT, Exp);
+    } else {
+      FPExp = DAG.getBitcast(VT, DAG.getSExtOrTrunc(Exp, DL, MVT::i64));
+    }
+  } else {
+    Exp = DAG.getSExtOrTrunc(Exp, DL, MVT::i32);
+    if (VT == MVT::f32) {
+      FPExp = DAG.getBitcast(VT, Exp);
+    } else {
+      SDValue Hi = DAG.getNode(ISD::SRA, DL, MVT::i32, Exp,
+                               DAG.getConstant(31, DL, MVT::i32));
+      FPExp = DAG.getNode(LoongArchISD::BUILD_PAIR_F64, DL, VT, Exp, Hi);
+    }
+  }
+  return DAG.getNode(LoongArchISD::FSCALEB, DL, VT, Op.getOperand(0), FPExp);
 }
 
 SDValue LoongArchTargetLowering::lowerFP_TO_SINT(SDValue Op,

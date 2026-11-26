@@ -343,6 +343,9 @@ def : RegRegLdPat<load, FLDX_D, f64>;
 defm : StPat<store, FST_D, FPR64, f64>;
 def : RegRegStPat<store, FSTX_D, FPR64, f64>;
 
+def : Pat<(loongarch_fscaleb FPR64:$src, FPR64:$exp),
+          (FSCALEB_D FPR64:$src, FPR64:$exp)>;
+
 /// FP conversion operations
 
 def : Pat<(loongarch_ftint FPR64:$src), (FTINTRZ_W_D FPR64:$src)>;

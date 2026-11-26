@@ -236,6 +236,7 @@ private:
   SDValue lowerATOMIC_FENCE(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerConstantPool(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerEH_DWARF_CFA(SDValue Op, SelectionDAG &DAG) const;
+  SDValue lowerFLDEXP(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerFP_TO_SINT(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerFP_TO_UINT(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerFP_TO_SINT_SAT(SDValue Op, SelectionDAG &DAG) const;
